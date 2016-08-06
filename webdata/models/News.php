@@ -142,7 +142,8 @@ class News extends Pix_Table
         $ret = URLNormalizer::query($url);
         if (!$ret) {
             error_log("URLNormalizer 失敗: {$url}");
-            return 0;
+            $ret = new StdClass;
+            $ret->normalized_id = $url;
         }
 
         if (News::find_by_normalized_crc32(crc32($ret->normalized_id))) {
