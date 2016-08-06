@@ -141,7 +141,6 @@ class News extends Pix_Table
     {
         $ret = URLNormalizer::query($url);
         if (!$ret) {
-            error_log("URLNormalizer 失敗: {$url}");
             $ret = new StdClass;
             $ret->normalized_id = $url;
         }
