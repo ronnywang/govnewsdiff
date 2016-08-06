@@ -86,7 +86,7 @@ class Crawler
         }
 
         $last_info = $news->infos->order('`time` DESC')->first();
-        $ret = NewsRaw::getInfo($content, $news->url);
+        $ret = NewsRaw::getInfo($content, $news->url, $news);
         $news->update(array(
             'last_fetch_at' => time(),
             'error_count' => 0,

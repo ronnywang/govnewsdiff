@@ -7,7 +7,7 @@ class NewRawRow extends Pix_Table_Row
         $news = News::find($this->news_id);
         $url = $news->url;
 
-        return NewsRaw::getInfo($this->raw, $url);
+        return NewsRaw::getInfo($this->raw, $url, $news);
     }
 }
 
@@ -39,7 +39,7 @@ class NewsRaw extends Pix_Table
         ));
     }
 
-    public static function getInfo($raw, $url)
+    public static function getInfo($raw, $url, $news)
     {
         $host = parse_url($url, PHP_URL_HOST);
 

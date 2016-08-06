@@ -35,7 +35,7 @@ class NewsRow extends Pix_Table_Row
             $res = $db->query("SELECT * FROM {$table_name} WHERE `news_id` = {$this->id} ORDER BY `time` ASC");
             while ($row = $res->fetch_object()) {
                 try {
-                    $ret = NewsRaw::getInfo($row->raw, $this->url);
+                    $ret = NewsRaw::getInfo($row->raw, $this->url, $this);
                 } catch (Exception $e) {
                     if (strpos($e->getMessage(), 'article id 不同') === 0) {
                         continue;
