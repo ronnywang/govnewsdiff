@@ -141,15 +141,9 @@ class Crawler
         $count = 0;
         $update_limit = 300;
         $invalid_count = 0; // 每次最多找 50 筆
-        // 以下這些來源如果 multi thread 抓很容易失敗，因此改成單一 thread 來抓
-        $alone_sources = array(
-            10 => true, // BCC 中廣新聞
-            14 => true, // 民視新聞
-            2 => true,  // 中時
-        );
         $total = intval($total);
         $part = intval($part);
-        foreach (News::search("created_at > $now - 86400 AND (last_fetch_at = 0 OR (last_fetch_at > $now - 86400 AND last_fetch_at < $now - 3600))")->order('last_fetch_at ASC') as $news) {
+        foreach (News::search(array('last_fetch_at' => 0))->order('id ASC') as $news) {
             if ($total !== 1 and intval($news->source) % $total !== $part) {
                 continue;
             }
@@ -197,11 +191,7 @@ class Crawler
             curl_setopt($curl, CURLOPT_HEADER, true);
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
 
-            if (array_key_exists($news->source, $alone_sources)) {
-                $alone_handles[] = $curl;
-            } else {
-                curl_multi_add_handle($mh, $curl);
-            }
+            curl_multi_add_handle($mh, $curl);
             $handles[$id] = $curl;
         }
 
@@ -238,13 +228,8 @@ class Crawler
         $status_count = array();
         foreach ($fetching_news as $index => $news) {
             $curl = $handles[$index];
-            if (array_key_exists($news->source, $alone_sources)) {
-                $content = curl_exec($curl);
-                $errno = curl_errno($curl);
-            } else {
-                $content = curl_multi_getcontent($curl);
-                $errno = $multi_errnos[$index];
-            }
+            $content = curl_multi_getcontent($curl);
+            $errno = $multi_errnos[$index];
             $info = curl_getinfo($curl);
             list($header, $body) = explode("\r\n\r\n", $content, 2);
 
