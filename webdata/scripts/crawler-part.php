@@ -2,8 +2,8 @@
 
 include(__DIR__ . '/../init.inc.php');
 
-$part = $_SERVER['argv'][1];
-$total = $_SERVER['argv'][2];
+$part = $_SERVER['argv'][1] ?: 1;
+$total = $_SERVER['argv'][2] ?: 1;
 
 $key = "crawlering-{$part}-{$total}";
 if ($_SERVER['argv'][3] != 'force' and $time = intval(KeyValue::get($key)) and time() - $time < 600) {
