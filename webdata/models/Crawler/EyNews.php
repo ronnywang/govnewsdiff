@@ -5,7 +5,7 @@ class Crawler_EyNews
     public static function crawl($insert_limit)
     {
         $insert = $update = 0;
-        for ($page = 1; $page <= 3; $page ++) { // 只抓第一頁
+        for ($page = 1; $page <= 1; $page ++) { // 只抓第一頁
             $url = "http://www.ey.gov.tw/Ey_News.aspx?n=DC478855B8ECCFBC&page={$page}&PageSize=20";
             $content = Crawler::getBody($url);
             preg_match_all('#"(Video_Content|News_Content2)\.aspx\?[^"]*"#', $content, $matches);
