@@ -4,7 +4,7 @@ class Crawler_EyNews
 {
     public static function crawl($insert_limit)
     {
-        for ($page = 63; $page <= 449; $page ++) {
+        for ($page = 1; $page <= 1; $page ++) { // 只抓第一頁
             error_log($page);
             $url = "http://www.ey.gov.tw/Ey_News.aspx?n=DC478855B8ECCFBC&page={$page}&PageSize=20";
             $content = Crawler::getBody($url);
