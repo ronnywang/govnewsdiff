@@ -4,6 +4,7 @@ class Crawler_MOEA
 {
     public static function crawl($insert_limit)
     {
+        $insert = $update = 0;
         for ($page = 1; $page <= 1; $page ++) {
             $url = "http://www.moea.gov.tw/MNS/populace/news/News.aspx?kind=2&menu_id=41";
             $curl = curl_init($url);
@@ -12,9 +13,12 @@ class Crawler_MOEA
             $content = curl_exec($curl);
             preg_match_all('#"\.\./\.\.(/populace/news/News.aspx\?kind=[0-9]*&amp;menu_id=[0-9]*&amp;news_id=[0-9]*)"#', $content, $matches);
             $urls = array_map(function($u) { return 'http://www.moea.gov.tw/MNS' . htmlspecialchars_decode(trim($u, '"')); }, $matches[1]);
-            print_r($urls);
             foreach ($urls as $url) {
-                News::addNews($url, 2);
+                $update ++;
+                $insert += News::addNews($url, 2);
+                if ($insert_limit <= $insert) {
+                    break 2;
+                }
             }
         }
 
