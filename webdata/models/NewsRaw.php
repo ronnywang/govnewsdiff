@@ -49,18 +49,12 @@ class NewsRaw extends Pix_Table
             return $ret;
         }
 
-        switch ($news->source) {
-        case 1:
-            $ret = Crawler_EyNews::parse($raw, $url);
-            break;
-
-        case 2:
-            $ret = Crawler_MOEA::parse($raw, $url);
-            break;
-
-        default:
+        $sources = News::getSources();
+        if (!array_key_exists($news->source, $sources)) {
             throw new Exception('unknown host: ' . $url);
         }
+
+        $ret = call_user_func(array($sources[$news->source][1], 'parse'), $raw, $url);
 
         if (!$ret->title or !$ret->body) {
             $ret = new StdClass;

@@ -4,7 +4,7 @@ $sources = News::getSources();
 <?= $this->partial('/common/header.phtml', $this) ?>
 <?php foreach ($this->news_array as $news) { ?>
 <?php $first_info = $news->infos->ordeR('time ASC')->first(); ?>
-<h1>[<?= $this->escape($sources[$news->source]) ?>]<a href="/index/log/<?= $news->id ?>"><?= $this->escape($first_info->title) ?></a></h1>
+<h1>[<?= $this->escape($sources[$news->source][0]) ?>]<a href="/index/log/<?= $news->id ?>"><?= $this->escape($first_info->title) ?></a></h1>
 <h4><?= $this->escape(urldecode($news->url)) ?></h4>
 <table class="table">
     <tr>
