@@ -8,7 +8,7 @@ class Crawler_EyNews
         for ($page = 1; $page <= 3; $page ++) { // 只抓第一頁
             $url = "http://www.ey.gov.tw/Ey_News.aspx?n=DC478855B8ECCFBC&page={$page}&PageSize=20";
             $content = Crawler::getBody($url);
-            preg_match_all('#"(Video_Content|News_Content2)\.aspx?[^"]*"#', $content, $matches);
+            preg_match_all('#"(Video_Content|News_Content2)\.aspx\?[^"]*"#', $content, $matches);
             $urls = array_map(function($u) { return 'http://www.ey.gov.tw/' . htmlspecialchars_decode(trim($u, '"')); }, $matches[0]);
             foreach ($urls as $url) {
                 $insert += News::addNews($url, 1);
