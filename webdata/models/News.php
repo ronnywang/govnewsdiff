@@ -170,6 +170,7 @@ class News extends Pix_Table
         // 需要改 NewsRaw 同步加上 Crawler Class
         return array(
             1 => '行政院本院新聞',
+            2 => '經濟部重大政策',
         );
     }
 }

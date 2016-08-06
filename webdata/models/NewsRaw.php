@@ -54,6 +54,10 @@ class NewsRaw extends Pix_Table
             $ret = Crawler_EyNews::parse($raw, $url);
             break;
 
+        case 2:
+            $ret = Crawler_MOEA::parse($raw, $url);
+            break;
+
         default:
             throw new Exception('unknown host: ' . $url);
         }
