@@ -2,6 +2,31 @@
 $sources = News::getSources();
 ?>
 <?= $this->partial('/common/header.phtml', $this) ?>
+<?php if ($this->is_index) { ?>
+<h2>目前來源</h2>
+<table class="table">
+    <thead>
+        <tr><th>來源</th><th>數量</th><th>最新公告</th><th>最新時間</th></tr>
+    </thead>
+    <tbody>
+    <?php foreach (News::getSources() as $id => $name_class) { ?>
+    <?php list($name, $class) = $name_class; ?>
+    <?php $news = News::search(array('source' => $id))->max('last_fetch_at'); ?>
+    <?php $info = $news->infos->max('time') ?>
+    <tr>
+        <td>
+            <a href="/index/source/<?= $id ?>"><?= $this->escape($name) ?></a>
+        </td>
+        <td><?= count(News::search(array('source' => $id))) ?></td>
+        <td>
+            <a href="/index/log/<?= $news->id ?>"><?= $this->escape(mb_strimwidth($info->title, 0, 64, '...')) ?></a>
+        </td>
+        <td><?= date('c', $info->time) ?></td>
+    </tr>
+    <?php } ?>
+</table>
+<hr>
+<?php } ?>
 <?php foreach ($this->news_array as $news) { ?>
 <?php $first_info = $news->infos->ordeR('time ASC')->first(); ?>
 <h1>[<?= $this->escape($sources[$news->source][0]) ?>]<a href="/index/log/<?= $news->id ?>"><?= $this->escape($first_info->title) ?></a></h1>

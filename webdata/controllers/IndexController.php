@@ -4,6 +4,7 @@ class IndexController extends Pix_Controller
 {
     public function indexAction()
     {
+        $this->view->is_index = true;
         $this->view->news_array = News::search(1)->order('last_fetch_at DESC')->limit(30);
     }
 
