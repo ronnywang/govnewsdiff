@@ -141,6 +141,9 @@ class Crawler
         $count = 0;
         $update_limit = 300;
         $invalid_count = 0; // 每次最多找 50 筆
+        $alone_sources = array(
+            1 => true, // 行政院一次不能抓太多
+        );
         $total = intval($total);
         $part = intval($part);
         foreach (News::search(array('last_fetch_at' => 0))->order('id ASC') as $news) {
@@ -191,7 +194,11 @@ class Crawler
             curl_setopt($curl, CURLOPT_HEADER, true);
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
 
-            curl_multi_add_handle($mh, $curl);
+            if (array_key_exists($news->source, $alone_sources)) {
+                $alone_handles[] = $curl;
+            } else {
+                curl_multi_add_handle($mh, $curl);
+            }
             $handles[$id] = $curl;
         }
 
@@ -228,8 +235,13 @@ class Crawler
         $status_count = array();
         foreach ($fetching_news as $index => $news) {
             $curl = $handles[$index];
-            $content = curl_multi_getcontent($curl);
-            $errno = $multi_errnos[$index];
+            if (array_key_exists($news->source, $alone_sources)) {
+                $content = curl_exec($curl);
+                $errno = curl_errno($curl);
+            } else {
+                $content = curl_multi_getcontent($curl);
+                $errno = $multi_errnos[$index];
+            }
             $info = curl_getinfo($curl);
             list($header, $body) = explode("\r\n\r\n", $content, 2);
 
