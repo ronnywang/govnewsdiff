@@ -73,7 +73,8 @@ class IndexController extends Pix_Controller
         $check_time = 30; // 幾分鐘沒有從列表抓到任何新聞就要警告
 
         $sources = News::getSources();
-        foreach ($sources as $id => $name) {
+        foreach ($sources as $id => $name_class) {
+            list($name, $class) = $name_class;
             if (date('H') > 8 and KeyValue::get('source_update-' . $id) < time() - $check_time * 60) {
                 // 早上八點以後才會確認這個
                 $ret[] = "{$name}({$id}) 超過 {$check_time} 分鐘沒有抓到新聞";
@@ -95,7 +96,7 @@ class IndexController extends Pix_Controller
             $new_count = count(News::search("created_at > $now - 86400 AND last_fetch_at = 0"));
             echo "\n目前累積要更新新聞數有 {$count} 則(新資料: {$new_count} 筆)\n";
             foreach ($source_ids as $source => $source_count) {
-                echo "{$sources[$source]}: {$source_count}\n";
+                echo "{$sources[$source][0]}: {$source_count}\n";
             }
             echo "正在抓: " . KeyValue::get('Crawling');
         }
