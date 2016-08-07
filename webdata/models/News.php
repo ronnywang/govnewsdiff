@@ -125,6 +125,7 @@ class News extends Pix_Table
         $this->_columns['error_count'] = array('type' => 'tinyint', 'default' => 0);
 
         $this->_relations['infos'] = array('rel' => 'has_many', 'type' => 'NewsInfo', 'foreign_key' => 'news_id', 'delete' => true);
+        $this->addIndex('source_fetchat', array('source', 'last_fetch_at'));
 
     }
 
