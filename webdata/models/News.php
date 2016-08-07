@@ -6,13 +6,7 @@ class NewsRow extends Pix_Table_Row
     {
         $sources = array();
         foreach ($this->infos as $news_info) {
-            $table_name = "news_raw_" . date('Ym', $news_info->time);
-            $table = NewsRaw::getTable();
-            $db = NewsRaw::getDb();
-            $res = $db->query("SELECT * FROM {$table_name} WHERE news_id = {$news_info->news_id} AND `time` = {$news_info->time}");
-            while ($row = $res->fetch_object()) {
-                $sources[] = $row;
-            }
+            $sources[] = NewsRaw::search(array('news_id' => $news_info->news_id, 'time' => $news_info->time))->first();
         }
 
         return $sources;
@@ -28,33 +22,27 @@ class NewsRow extends Pix_Table_Row
 
         $diff_infos = array();
 
-        for ($time = $start_month; $time <= $end_month; $time = strtotime('+1 month', $time)) {
-            $table_name = 'news_raw_' . date('Ym', $time);
-            $table = NewsRaw::getTable();
-            $db = NewsRaw::getDb();
-            $res = $db->query("SELECT * FROM {$table_name} WHERE `news_id` = {$this->id} ORDER BY `time` ASC");
-            while ($row = $res->fetch_object()) {
-                try {
-                    $ret = NewsRaw::getInfo($row->raw, $this->url, $this);
-                } catch (Exception $e) {
-                    if (strpos($e->getMessage(), 'article id 不同') === 0) {
-                        continue;
-                    }
-                    error_log("處理 {$this->url} 錯誤: " . $e->getMessage());
-                    throw $e;
+        foreach (NewsRaw::search(array('news_id' => $this->id))->order('time ASC') as $row) {
+            try {
+                $ret = NewsRaw::getInfo($row->raw, $this->url, $this);
+            } catch (Exception $e) {
+                if (strpos($e->getMessage(), 'article id 不同') === 0) {
+                    continue;
                 }
-                if (count($diff_infos) and $diff_infos[0]['title'] == $diff_infos[0]['body'] and in_array($diff_infos[0]['title'], array('', 0, 404, '無法判斷的內容', '503'))) {
-                    array_shift($diff_infos);
-                }
+                error_log("處理 {$this->url} 錯誤: " . $e->getMessage());
+                throw $e;
+            }
+            if (count($diff_infos) and $diff_infos[0]['title'] == $diff_infos[0]['body'] and in_array($diff_infos[0]['title'], array('', 0, 404, '無法判斷的內容', '503'))) {
+                array_shift($diff_infos);
+            }
 
-                if (!count($diff_infos) or $ret->title != $diff_infos[0]['title'] or $ret->body != $diff_infos[0]['body']) {
-                    array_unshift($diff_infos, array(
-                        'news_id' => $this->id,
-                        'time' => $row->time,
-                        'title' => $ret->title,
-                        'body' => $ret->body,
-                    ));
-                }
+            if (!count($diff_infos) or $ret->title != $diff_infos[0]['title'] or $ret->body != $diff_infos[0]['body']) {
+                array_unshift($diff_infos, array(
+                    'news_id' => $this->id,
+                    'time' => $row->time,
+                    'title' => $ret->title,
+                    'body' => $ret->body,
+                ));
             }
         }
 

@@ -27,16 +27,8 @@ class NewsRaw extends Pix_Table
 
     public static function insertNew($data)
     {
-        $table_name = "news_raw_" . date('Ym', $data['time']);
-        $table = NewsRaw::getTable();
-        $db = NewsRaw::getDb();
-        $db->query(sprintf("INSERT INTO %s (`news_id`, `time`, `header`, `raw`) VALUES (%d, %d, %s, %s)",
-            $table_name,
-            $data['news_id'],
-            $data['time'],
-            $db->quoteWithColumn($table, $data['header'], 'header'),
-            $db->quoteWithColumn($table, $data['raw'], 'raw')
-        ));
+        // 這邊量比較小，所以不需要分 table，舊程式碼可參考 newsdiff
+        NewsRaw::insert($data);
     }
 
     public static function getInfo($raw, $url, $news)
