@@ -27,6 +27,13 @@ class Crawler_MOEA
 
     public static function parse($body, $url)
     {
+        if (strpos($body, '您要查看的網頁可能已被刪除、名稱已被更改，或者暫時不可用。')) {
+            $ret = new STdClass;
+            $ret->title = 404;
+            $ret->body = 404;
+            return $ret;
+        }
+
         $doc = new DOMDocument;
         @$doc->loadHTML($body);
 
