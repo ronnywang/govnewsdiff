@@ -2,3 +2,4 @@
 webdata/config.php
 nbproject
 webdata/scripts/dump
+webdata/db.sqlite
